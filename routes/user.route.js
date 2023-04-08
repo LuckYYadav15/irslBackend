@@ -3,6 +3,11 @@
 //---------------------------------------------MODULES---------------------------------------------
 var express = require("express");
 var Users = require("../controllers/user.controller");
+const cors = require('cors');
+const express = require('express');
+const app = express();
+
+app.use(cors());
 
 //---------------------------------------------INSTANCE---------------------------------------------
 var userRouter = new express.Router();
