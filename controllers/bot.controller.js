@@ -173,6 +173,7 @@ class Bot {
           Item: {
             ...BotDetails.Item,
             Name: Name,
+            featureId: featureId
           },
         };
 
