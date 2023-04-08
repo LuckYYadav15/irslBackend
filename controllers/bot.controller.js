@@ -20,86 +20,83 @@ var handler = new Handler();
 
 class Bot {
   async create(req, res) {
-    const { Id, Name, userId, featureId } = req.body;
+    const { Name, userId, featureId } = req.body;
     console.log(req.body);
     try {
       // Check if the entered Id is present in Database
-      var params = {
+      // var params = {
+      //   TableName: TABLE_NAME,
+      //   Key: {
+      //     Id: Id,
+      //   },
+      // };
+
+      // const BotDetails = await dynamoClient.get(params).promise();
+
+      // if (BotDetails.Item === undefined) {
+      // const user = await dynamoClient
+      //   .get({
+      //     TableName: "users",
+      //     Key: {
+      //       id: userId,
+      //     },
+      //   })
+      //   .promise();
+
+      // if (!user.Item) {
+      //     return res.status(404).json({
+      //         flag: false,
+      //         status: "OK",
+      //         message: "User not found",
+      //     });
+      // }
+
+      let newBot = {
         TableName: TABLE_NAME,
-        Key: {
-          Id: Id,
+        Item: {
+          Id: await generateUniqueString(),
+          Name: Name,
+          userId: userId,
+          featureId: featureId,
+          createdOn: new Date().toString(),
         },
       };
 
-      const BotDetails = await dynamoClient.get(params).promise();
-
-      if (BotDetails.Item === undefined) {
-        // const user = await dynamoClient
-        //   .get({
-        //     TableName: "users",
-        //     Key: {
-        //       id: userId,
-        //     },
-        //   })
-        //   .promise();
-        
-        // if (!user.Item) {
-        //     return res.status(404).json({
-        //         flag: false,
-        //         status: "OK",
-        //         message: "User not found",
-        //     });
-        // }
-
-          let newBot = {
-            TableName: TABLE_NAME,
-            Item: {
-              Id: await generateUniqueString(),
-              Name: Name,
-              userId: userId,
-              featureId: featureId,
-              createdOn: new Date().toString(),
+      const saveBot = dynamoClient.put(newBot, function (error, data) {
+        if (error) {
+          handler.error(
+            req,
+            res,
+            error,
+            {
+              Name,
+              userId,
+              featureId,
             },
-          };
-
-          const saveBot = dynamoClient.put(newBot, function (error, data) {
-            if (error) {
-              handler.error(
-                req,
-                res,
-                error,
-                {
-                  Id,
-                  Name,
-                  userId,
-                  featureId,
-                },
-                409
-              );
-            } else {
-              res.status(201).json({
-                flag: true,
-                status: "OK",
-                message: "Bot Created successfully",
-                data: newBot.Item,
-              });
-            }
+            409
+          );
+        } else {
+          res.status(201).json({
+            flag: true,
+            status: "OK",
+            message: "Bot Created successfully",
+            data: newBot.Item,
           });
         }
-      else {
-        res.status(409).json({
-          flag: false,
-          status: "OK",
-          message: "Bot already exists",
-        });
-      }
+      });
     } catch (error) {
+      // else {
+      //   res.status(409).json({
+      //     flag: false,
+      //     status: "OK",
+      //     message: "Bot already exists",
+      //   });
+      // }
       handler.error(
         req,
         res,
         error,
         {
-          Id,
           Name,
           userId,
           featureId,
@@ -155,7 +152,7 @@ class Bot {
   }
 
   async update(req, res) {
-    const { Id, Name } = req.body;
+    const { Id, Name, featureId} = req.body;
     console.log(req.body);
     try {
       var params = {
@@ -165,7 +162,7 @@ class Bot {
         },
       };
 
-      const BotDetails = await dynamoClient.get(params).promise();
+      const BotDetails = await dynamoClient.get(params).promise(); 
 
       if (BotDetails.Item !== undefined) {
         var updatedBot = {
@@ -173,6 +170,7 @@ class Bot {
           Item: {
             ...BotDetails.Item,
             Name: Name,
+            // featureId: [...BotDetails.Item.featureId, ...featureId],
             featureId: featureId
           },
         };
@@ -186,6 +184,7 @@ class Bot {
               {
                 Id,
                 Name,
+                featureId,
               },
               409
             );
@@ -194,7 +193,9 @@ class Bot {
               flag: true,
               status: "OK",
               message: "Bot updated successfully",
-            });
+              data: updatedBot.Item,
+            })
+            console.log(updatedBot.Item);
           }
         });
       } else {
@@ -212,11 +213,12 @@ class Bot {
         {
           Id,
           Name,
+          featureId,
         },
         409
-      );
-    }
-  }
+      );
+    }
+  }
 
   async get(req, res) {
     const { Id } = req.body;
@@ -258,29 +260,38 @@ class Bot {
 
   async getAll(req, res) {
     try {
-      var params = {
+      const { userId } = req.body;
+
+      const params = {
         TableName: TABLE_NAME,
+        FilterExpression: "#userId = :userId",
+        ExpressionAttributeNames: {
+          "#userId": "userId",
+        },
+        ExpressionAttributeValues: {
+          ":userId": userId,
+        },
       };
 
-      const BotDetails = await dynamoClient.scan(params).promise();
+      const botDetails = await dynamoClient.scan(params).promise();
 
-      if (BotDetails.Items !== undefined) {
-        res.status(201).json({
+      if (botDetails.Items !== undefined) {
+        res.status(200).json({
           flag: true,
           status: "OK",
-          data: BotDetails.Items,
+          data: botDetails.Items,
         });
       } else {
-        res.status(409).json({
+        res.status(404).json({
           flag: false,
           status: "OK",
-          message: "Bot not found",
+          message: "No bots found for the specified user",
         });
       }
     } catch (error) {
-      handler.error(req, res, error, {}, 409);
+      handler.error(req, res, error, {}, 500);
     }
   }
 }
 
-module.exports = Bot;
+module.exports = Bot;

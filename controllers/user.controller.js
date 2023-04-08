@@ -239,7 +239,12 @@ class User {
             flag: true,
             status: "Success",
             message: "User is verified",
-            body: { userDetails },
+            body: { 
+              userDetails: {
+                ...userDetails.Item,
+                userId: userDetails.Item.userId // add userId to the userDetails object
+              } 
+            },
           });
         } else {
           const error = new Error("password doesn't match");

@@ -23,7 +23,7 @@ let mailOptions = {
   subject: "",
 };
 
-const apiHostTestUrl = `${process.env.HOST_URL}/api/users/verify`;
+const apiHostTestUrl = `${process.env.HOST_URL}/api/user/verify`;
 const apiClientUrl = process.env.CLIENT_URL;
 
 module.exports = { transporter, mailOptions, apiClientUrl, apiHostTestUrl };

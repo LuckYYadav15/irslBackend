@@ -11,7 +11,7 @@ passport.use(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/google/callback",
+      callbackURL: "https://irsl-backend-z26b.onrender.com/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       done(null, profile);
