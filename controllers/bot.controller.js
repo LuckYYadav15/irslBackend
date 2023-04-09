@@ -275,14 +275,14 @@ class Bot {
       };
 
       const botDetails = await dynamoClient.scan(params).promise();
-      console.log("botDetails:", botDetails.Items)
+
       if (botDetails.Items !== undefined) {
         res.status(200).json({
           flag: true,
           status: "OK",
           data: botDetails,
         });
-        console.log("get bot details:",botDetails.Items);
+        console.log("get bot details:",botDetails);
       } else {
         res.status(404).json({
           flag: false,
