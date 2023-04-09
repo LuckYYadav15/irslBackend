@@ -1,10 +1,9 @@
 //---------------------------------------------MODULES---------------------------------------------
 var express = require("express");
 var Bot = require("../controllers/bot.controller");
-const cors = require('cors');
+const cors = require("cors");
 const app = express();
 app.use(cors());
-
 //---------------------------------------------INSTANCE---------------------------------------------
 var botRouter = new express.Router();
 var Bot = new Bot();
