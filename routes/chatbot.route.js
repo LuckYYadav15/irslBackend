@@ -1,9 +1,7 @@
 //---------------------------------------------MODULES---------------------------------------------
 var express = require('express');
 var Chatbots = require("../controllers/chatbot.controller");
-const cors = require("cors");
-const app = express();
-app.use(cors());
+
 //---------------------------------------------INSTANCE---------------------------------------------
 var ChatbotRouter = new express.Router();
 var Chatbot = new Chatbots();

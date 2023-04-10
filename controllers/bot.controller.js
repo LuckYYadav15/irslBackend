@@ -261,28 +261,28 @@ class Bot {
 
   async getAll(req, res) {
     try {
-      const { userId } = req.body;
+      // const { userId } = req.body;
 
       const params = {
         TableName: TABLE_NAME,
-        FilterExpression: "#userId = :userId",
-        ExpressionAttributeNames: {
-          "#userId": "userId",
-        },
-        ExpressionAttributeValues: {
-          ":userId": userId,
-        },
+        // FilterExpression: "#userId = :userId",
+        // ExpressionAttributeNames: {
+        //   "#userId": "userId",
+        // },
+        // ExpressionAttributeValues: {
+        //   ":userId": userId,
+        // },
       };
 
       const botDetails = await dynamoClient.scan(params).promise();
-
+      console.log("botDetails:", botDetails.Items)
       if (botDetails.Items !== undefined) {
         res.status(200).json({
           flag: true,
           status: "OK",
           data: botDetails,
         });
-        console.log("get bot details:",botDetails);
+        console.log("get bot details:",botDetails.Items);
       } else {
         res.status(404).json({
           flag: false,
