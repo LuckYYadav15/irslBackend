@@ -24,7 +24,7 @@ class Chatbot {
     const { Id, Type, Name, ResponseText, Tags, AddPipe } = req.body;
     console.log(req.body);
     try {
-      // Check if the entered Id is present in Database
+      //Check if the entered Id is present in Database
       var params = {
         TableName: TABLE_NAME,
         Key: {
